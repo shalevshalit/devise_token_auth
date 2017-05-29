@@ -1,6 +1,6 @@
 module DeviseTokenAuth
   class TokenValidationsController < DeviseTokenAuth::ApplicationController
-    skip_before_action :assert_is_devise_resource!, :only => [:validate_token]
+    skip_before_action :assert_is_devise_resource!, :only => [:validate_token], raise: false
     before_action :set_user_by_token, :only => [:validate_token]
 
     def validate_token
@@ -17,16 +17,16 @@ module DeviseTokenAuth
 
     def render_validate_token_success
       render json: {
-        success: true,
-        data: resource_data(resource_json: @resource.token_validation_response)
-      }
+                 success: true,
+                 data: resource_data(resource_json: @resource.token_validation_response)
+             }
     end
 
     def render_validate_token_error
       render json: {
-        success: false,
-        errors: [I18n.t("devise_token_auth.token_validations.invalid")]
-      }, status: 401
+                 success: false,
+                 errors: [I18n.t("devise_token_auth.token_validations.invalid")]
+             }, status: 401
     end
   end
 end
