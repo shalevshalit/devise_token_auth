@@ -1,6 +1,5 @@
 module DeviseTokenAuth
   class PasswordsController < DeviseTokenAuth::ApplicationController
-    include DeviseTokenAuth::Concerns::SetUserByToken
     before_action :set_user_by_token, :only => [:update]
     skip_after_action :update_auth_header, :only => [:create, :edit], raise: false
 

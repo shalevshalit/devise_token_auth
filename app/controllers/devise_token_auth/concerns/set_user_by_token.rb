@@ -18,7 +18,7 @@ module DeviseTokenAuth::Concerns::SetUserByToken
   # user auth
   def set_user_by_token(mapping=nil)
     # determine target authentication class
-    rc = resource_class(mapping)
+    rc = resource_class_fix(mapping)
 
     # no default user defined
     return unless rc
@@ -29,8 +29,8 @@ module DeviseTokenAuth::Concerns::SetUserByToken
     client_name = DeviseTokenAuth.headers_names[:'client']
 
     # parse header for values necessary for authentication
-    uid        = request.headers[uid_name] || params[uid_name]
-    @token     ||= request.headers[access_token_name] || params[access_token_name]
+    uid = request.headers[uid_name] || params[uid_name]
+    @token ||= request.headers[access_token_name] || params[access_token_name]
     @client_id ||= request.headers[client_name] || params[client_name]
 
     # client_id isn't required, set to 'default' if absent
@@ -47,7 +47,7 @@ module DeviseTokenAuth::Concerns::SetUserByToken
     end
 
     # user has already been found and authenticated
-    return @resource if @resource && @resource.class == rc
+    return @resource if @resource and @resource.class == rc
 
     # ensure we clear the client_id
     if !@token
@@ -58,7 +58,7 @@ module DeviseTokenAuth::Concerns::SetUserByToken
     return false unless @token
 
     # mitigate timing attacks by finding by uid instead of auth token
-    user = uid && rc.find_by(uid: uid)
+    user = uid && rc.find_by_uid(uid)
 
     if user && user.valid_token?(@token, @client_id)
       # sign_in with bypass: true will be deprecated in the next version of Devise
@@ -73,6 +73,16 @@ module DeviseTokenAuth::Concerns::SetUserByToken
       @client_id = nil
       return @resource = nil
     end
+  end
+
+  def resource_class_fix(m=nil)
+    if m
+      mapping = Devise.mappings[m]
+    else
+      mapping = Devise.mappings[resource_name] || Devise.mappings.values.first
+    end
+
+    mapping.to
   end
 
 
