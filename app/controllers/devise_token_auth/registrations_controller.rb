@@ -1,5 +1,6 @@
 module DeviseTokenAuth
   class RegistrationsController < DeviseTokenAuth::ApplicationController
+    include DeviseTokenAuth::Concerns::SetUserByToken
     before_action :set_user_by_token, :only => [:destroy, :update]
     before_action :validate_sign_up_params, :only => :create
     before_action :validate_account_update_params, :only => :update

@@ -1,6 +1,6 @@
 module DeviseTokenAuth
   class ApplicationController < DeviseController
-    self.include DeviseTokenAuth::Concerns::SetUserByToken
+    include DeviseTokenAuth::Concerns::SetUserByToken
 
     def resource_data(opts={})
       response_data = opts[:resource_json] || @resource.as_json
